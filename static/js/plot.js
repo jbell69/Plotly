@@ -74,6 +74,7 @@ function DrawBubbleChart(sampleID) {
             margin: { t: 0 },
             hovermode: "closest",
             xaxis: { title: "OTU ID" },
+            yaxis: { title: "Number of Bacteria" },
             margin: { t: 30 }
         }
 
@@ -82,6 +83,56 @@ function DrawBubbleChart(sampleID) {
     })
 
 }
+
+function DrawGaugeChart(sampleID) {
+
+    console.log("DrawGaugeChart: Sample: ", sampleID);
+
+    d3.json("static/data/samples.json").then((importedData) => {
+
+        var data = importedData.metadata;
+        var resultArray = data.filter(sampleObj => sampleObj.id == sampleID);
+        var result = resultArray[0];
+
+        console.log(result);
+
+        var BB_Scrubs = result.wfreq;
+
+        console.log(BB_Scrubs);
+        console.log(result.wfreq);
+
+        var data = [
+            {
+                domain: { x: [0, 1], y: [0, 1] },
+                value: BB_Scrubs,
+                title: { text: "Belly Button Washing Frequency" },
+                type: "indicator",
+                mode: "gauge+number",
+                gauge: {
+                    axis: { range: [null, 9] },
+                    steps: [
+                        { range: [0, 1], color: "rgb(246,240,231)" },
+                        { range: [1, 2], color: "rgb(241,238,222)" },
+                        { range: [2, 3], color: "rgb(228,226,189)" },
+                        { range: [3, 4], color: "rgb(223,228,161)" },
+                        { range: [4, 5], color: "rgb(204,226,136)" },
+                        { range: [5, 6], color: "rgb(169,196,125)" },
+                        { range: [6, 7], color: "rgb(122,182,115)" },
+                        { range: [7, 8], color: "rgb(119,176,123)" },
+                        { range: [8, 9], color: "rgb(114,168,118)" }
+                    ]
+
+                }
+            }
+        ];
+
+        var layout = { width: 600, height: 450, margin: { t: 0, b: 0 } };
+
+        Plotly.newPlot('gauge', data, layout);
+    });
+
+}
+
 
 function ShowMetaData(sampleID) {
 
@@ -112,6 +163,7 @@ function optionChanged(newSampleID) {
     ShowMetaData(newSampleID);
     DrawBarGraph(newSampleID);
     DrawBubbleChart(newSampleID);
+    DrawGaugeChart(newSampleID)
 
 }
 
@@ -138,6 +190,7 @@ function Init() {
         ShowMetaData(sample);
         DrawBarGraph(sample);
         DrawBubbleChart(sample);
+        DrawGaugeChart(sample)
 
     });
 }
